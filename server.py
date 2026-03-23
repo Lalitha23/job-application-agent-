@@ -42,6 +42,20 @@ def save_application(
         cover_letter: The full cover letter text
     """
     try:
+        # Validate required fields are not empty
+        if not sanitize(company):
+            return "Error: Company name is missing or invalid. Please provide a valid company name."
+        if not sanitize(role):
+            return "Error: Role title is missing or invalid. Please provide a valid role title."
+        if not sanitize(job_id):
+            return "Error: Job ID is missing or invalid. Please provide a valid job ID."
+        if not resume_content.strip():
+            return "Error: Resume content is empty. Please provide the resume before saving."
+        if not job_description.strip():
+            return "Error: Job description is empty. Please provide the job description before saving."
+        if not cover_letter.strip():
+            return "Error: Cover letter is empty. Please write a cover letter before saving."
+
         # Build folder path
         safe_company = sanitize(company)
         safe_role = sanitize(role)
@@ -108,7 +122,10 @@ def list_applications() -> str:
 def review_resume() -> str:
     """Review resume against the job description."""
     return (
-        "Please review my resume against the job description I provided. "
+        "Before proceeding, check that both a job description AND a resume have been "
+        "provided in this conversation. If either is missing, stop and ask the user to "
+        "paste the missing item before continuing.\n\n"
+        "If both are present: please review my resume against the job description. "
         "Identify the top 5 gaps or mismatches, and suggest specific improvements "
         "to better align my resume with this role. Be direct and specific."
     )
@@ -118,9 +135,12 @@ def review_resume() -> str:
 def rewrite_resume() -> str:
     """Rewrite resume tailored to the job description."""
     return (
-        "Please rewrite my resume tailored specifically to this job description. "
-        "Keep all my real experience and skills but reframe and reorder them "
-        "to match what this role is looking for. Preserve my voice and keep it authentic."
+        "Before proceeding, check that both a job description AND a resume have been "
+        "provided in this conversation. If either is missing, stop and ask the user to "
+        "paste the missing item before continuing.\n\n"
+        "If both are present: please rewrite my resume tailored specifically to this "
+        "job description. Keep all my real experience and skills but reframe and reorder "
+        "them to match what this role is looking for. Preserve my voice and keep it authentic."
     )
 
 
@@ -128,9 +148,12 @@ def rewrite_resume() -> str:
 def write_cover_letter() -> str:
     """Write a cover letter for this role."""
     return (
-        "Please write a compelling cover letter for this role based on my resume "
-        "and the job description. Keep it to 3 paragraphs: why this company, "
-        "why I am a strong fit, and a clear call to action. Keep it concise and genuine."
+        "Before proceeding, check that both a job description AND a resume have been "
+        "provided in this conversation. If either is missing, stop and ask the user to "
+        "paste the missing item before continuing.\n\n"
+        "If both are present: please write a compelling cover letter for this role. "
+        "Keep it to 3 paragraphs: why this company, why I am a strong fit, and a clear "
+        "call to action. Keep it concise and genuine."
     )
 
 
@@ -138,9 +161,20 @@ def write_cover_letter() -> str:
 def save_now() -> str:
     """Trigger to save the application artifacts."""
     return (
-        "Save now. Please extract the company name, role title and job ID from the "
-        "job description we have been working with, then call save_application with "
-        "the final resume, job description and cover letter from our conversation."
+        "Before saving, check that all of the following are present in our conversation:\n"
+        "  1. Job description\n"
+        "  2. Customized resume\n"
+        "  3. Cover letter\n\n"
+        "If any are missing, stop and ask the user to provide them before saving.\n\n"
+        "If all are present:\n"
+        "  - Extract the company name and role title from the job description\n"
+        "  - Look for a Job ID in the job description (e.g. JR-123456, REQ-789, #12345)\n"
+        "  - If a Job ID is found, confirm it with the user before saving\n"
+        "  - If no Job ID is found, ask the user: 'I could not find a Job ID in the job "
+        "description. Could you provide it? If there is no Job ID just type NONE and I "
+        "will use today's date instead.'\n\n"
+        "Once confirmed, call save_application with the company, role, job ID "
+        "(or today's date in YYYY-MM-DD format if NONE), and all three artifacts."
     )
 
 

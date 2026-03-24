@@ -10,7 +10,7 @@
 
 Two things collided to spark this idea.
 
-The first was a post by a Microsoft executive describing how AI could be used to organize your desktop — not just search it, but actively structure it, name things, keep it clean. That idea stuck: what if AI didn't just answer questions but actively managed the artifacts of your life?
+The first was a post by an executive describing how AI could be used to organize your desktop — not just search it, but actively structure it, name things, keep it clean. That idea stuck: what if AI didn't just answer questions but actively managed the artifacts of your life?
 
 The second was personal frustration. While job searching, I tried resume match scoring tools that suggested keyword changes to improve my match percentage. The result felt wrong — my resume started reading as inflated and generic rather than authentically representing my experience. I stopped using them. I wanted AI to help me present my genuine skills better, not game an algorithm. On top of that, every time I customized a resume and cover letter manually using Claude, I was left with a mess of files on my desktop — no structure, no easy way to find what I had sent where. I was doing the right thing by being intentional, but the organization was completely on me with no support.
 

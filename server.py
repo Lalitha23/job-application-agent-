@@ -139,8 +139,14 @@ def rewrite_resume() -> str:
         "provided in this conversation. If either is missing, stop and ask the user to "
         "paste the missing item before continuing.\n\n"
         "If both are present: please rewrite my resume tailored specifically to this "
-        "job description. Keep all my real experience and skills but reframe and reorder "
-        "them to match what this role is looking for. Preserve my voice and keep it authentic."
+        "job description. You must follow these rules strictly:\n"
+        "- Use ONLY the experience, skills and roles already present in my resume\n"
+        "- Do NOT add, invent or infer anything that is not already in my resume\n"
+        "- Do NOT inflate or exaggerate any experience or skill\n"
+        "- Do NOT add keywords that do not reflect my actual experience\n"
+        "- Your job is to reframe and reorder what is already there — not to fabricate\n"
+        "- Preserve my voice and keep it authentic to who I am\n\n"
+        "The goal is an honest, tailored resume — not a keyword-optimized one."
     )
 
 
@@ -152,8 +158,12 @@ def write_cover_letter() -> str:
         "provided in this conversation. If either is missing, stop and ask the user to "
         "paste the missing item before continuing.\n\n"
         "If both are present: please write a compelling cover letter for this role. "
-        "Keep it to 3 paragraphs: why this company, why I am a strong fit, and a clear "
-        "call to action. Keep it concise and genuine."
+        "You must follow these rules strictly:\n"
+        "- Base the cover letter ONLY on experience and skills present in my resume\n"
+        "- Do NOT invent, exaggerate or infer anything not already in my resume\n"
+        "- Do NOT make claims about my experience that are not supported by my resume\n\n"
+        "Structure: 3 paragraphs — why this company, why I am a genuine fit based on "
+        "my actual experience, and a clear call to action. Keep it concise and authentic."
     )
 
 

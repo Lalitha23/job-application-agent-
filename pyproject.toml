@@ -7,5 +7,6 @@ requires-python = ">=3.10"
 dependencies = [
     "anthropic>=0.86.0",
     "mcp[cli]>=1.26.0",
+    "msal>=1.35.1",
     "schedule>=1.2.2",
 ]

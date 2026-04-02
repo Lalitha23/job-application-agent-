@@ -1,8 +1,8 @@
 # Product Spec — Job Application Agent
 **Author:** Lalitha Pammi, Product Manager  
-**Version:** 1.0  
-**Status:** Agent 1 shipped · Agent 2 in progress  
-**Last updated:** March 2026
+**Version:** 1.1  
+**Status:** Agent 1 shipped · Agent 2 in progress · Multi-agent architecture planned  
+**Last updated:** April 2026
 
 ---
 
@@ -10,9 +10,9 @@
 
 Two things collided to spark this idea.
 
-The first was a post by an executive describing how AI could be used to organize your desktop — not just search it, but actively structure it, name things, keep it clean. That idea stuck: what if AI didn't just answer questions but actively managed the artifacts of your life?
+The first was a post by a tech executive describing how AI could be used to organize a desktop — not just search it, but actively structure it, name things, keep it clean. That idea stuck: what if AI didn't just answer questions but actively managed the artifacts of knowledge work?
 
-The second was personal frustration. While job searching, I tried resume match scoring tools that suggested keyword changes to improve my match percentage. The result felt wrong — my resume started reading as inflated and generic rather than authentically representing my experience. I stopped using them. I wanted AI to help me present my genuine skills better, not game an algorithm. On top of that, every time I customized a resume and cover letter manually using Claude, I was left with a mess of files on my desktop — no structure, no easy way to find what I had sent where. I was doing the right thing by being intentional, but the organization was completely on me with no support.
+The second was a pattern observed during job searching. Resume match scoring tools suggested keyword changes to improve match percentages. The result felt wrong — resumes started reading as inflated and generic rather than authentically representing real experience. The goal was AI that helps present genuine skills better, not game an algorithm. On top of that, every session customizing a resume and cover letter manually using Claude ended the same way — files in Downloads, no structure, no easy way to find what was sent where. The intentional approach was right, but the infrastructure to support it did not exist.
 
 The insight: job seekers in 2026 are already using LLMs like Claude and ChatGPT to customize their resumes. That behavior is established. What nobody had built was the layer on top — something that captures those customized artifacts, organizes them, and manages the lifecycle automatically. No external service. No subscription. Full control.
 
@@ -54,6 +54,7 @@ Informal interviews conducted at job seeker networking events in early 2026. Two
 - No single place to see everything applied to
 - Keyword inflation tools produce resumes that feel unreal and don't represent the candidate honestly
 - Existing AI resume tools push toward automation and volume — there is no tool built for the intentional, quality-first job seeker
+- No guardrails around AI-generated content — tools rewrite resumes without the candidate's knowledge or consent
 
 ---
 
@@ -66,7 +67,7 @@ Informal interviews conducted at job seeker networking events in early 2026. Two
 - Frustrated by auto-apply tools — feels they misrepresent her and remove her agency
 - Wants more control over her applications — wants to know exactly what was sent, to whom, and when
 
-**Validation:** Melissa's frustrations independently matched mine. This was not a unique problem — it was a pattern.
+**Validation:** Melissa's frustrations independently mirrored those of Persona 1 — discovered through separate conversations at different events. This was not an isolated experience — it was a consistent pattern across the target segment.
 
 ---
 
@@ -89,9 +90,13 @@ Existing tools either charge recurring subscriptions, take control away from the
 
 ### Job Application Agent
 
-An MCP server that lives inside Claude Desktop (and eventually ChatGPT and Copilot) and automates the job application lifecycle — from resume customization to organized file storage to automatic rejection cleanup.
+An MCP server that lives inside Claude Desktop (and eventually ChatGPT and Copilot) and automates the job application lifecycle — from resume customization to organized file storage to human-confirmed rejection cleanup.
 
 **Core philosophy:** Meet users where they already are. No new app to download, no new account to create, no subscription to pay for. The agent plugs into the LLM the user already uses and adds structure to a workflow they are already doing.
+
+**Responsible AI philosophy:** The agent never acts without the user's knowledge. It does not rewrite resumes from scratch, invent experience, or apply on the user's behalf. Every AI action is transparent, reversible, and grounded in what the user has already written. The human stays in control at every step.
+
+**Scalability philosophy:** The product is built on a single MCP server that grows over time. Each new agent capability is added as a new MCP tool — Claude Desktop connects to the server once and automatically gains access to every tool. This means adding a new agent does not require a new server, a new connection, or any reconfiguration. The server is the stable foundation. Agents and tools are layered on top of it as the product evolves.
 
 ---
 
@@ -127,30 +132,96 @@ Saves: job_description.txt · resume.txt · cover_letter.txt
 - Job ID as the primary key — no database needed, folder name is the lookup key
 - Prompt guards — all prompts check for JD and resume before proceeding
 - Existing folders respected — agent checks before creating, never overwrites
+- Responsible AI guardrails — rewrite prompt explicitly instructs Claude to use only experience already in the resume, never invent or inflate
+- Authentic over optimized — prompts instruct Claude to preserve the user's voice, not keyword-optimize for ATS systems
 
 ---
 
 ### Agent 2 — Rejection Watcher (in progress)
-**Pattern: Fully autonomous** — runs entirely without user input. The agent perceives (email), reasons (is this a rejection? which role?), and acts (archive folder, write log) on its own schedule. The user never needs to trigger it.
+**Pattern: Human-in-the-loop** — the agent perceives and reasons autonomously, but the archiving action requires explicit user confirmation inside Claude Desktop. Nothing is deleted without the user saying so.
 
 ```
 Runs at 6am daily (Python scheduler)
         ↓
-Reads Gmail/Outlook via OAuth (last 24 hours)
+Reads Outlook via Microsoft Graph API (last 24 hours)
         ↓
 Claude API classifies each email:
-Is this a rejection? Which Job ID?
+Is this a rejection? Which Job ID? Which company?
         ↓
-Matches Job ID to folder name on Desktop
+Writes pending actions to pending_actions.json
+{company, job_id, folder_path, detected_date}
         ↓
-Archives folder → Desktop/Job Applications/_Rejected/
-Writes to deletion_log.csv: company · role · Job ID · date
+User opens Claude Desktop and asks "any rejections?"
+        ↓
+check_rejections() tool reads pending_actions.json
+Shows user: "Amazon JR-123456 — archive folder? Yes/No"
+        ↓
+User confirms → archive_application() tool fires
+Moves folder → Desktop/Job Applications/_Rejected/
+Writes to deletion_log.csv · clears from pending
 ```
 
+**MCP primitives added:**
+- `check_rejections()` — tool, reads pending_actions.json and presents to user
+- `archive_application()` — tool, archives folder and writes to log on confirmation
+- `check_pending` — prompt, natural language trigger to surface pending actions
+
 **Key design decisions:**
-- Job ID matching — rejection emails from most ATS systems include the Job ID
+- Human-in-the-loop — agent detects, human decides, agent executes
+- Single MCP server — all tools live in server.py, no separate server needed
+- pending_actions.json as the bridge between watcher.py and Claude Desktop
 - Soft delete — moves to `_Rejected/` folder, never permanently deletes
-- Audit log — every deletion is recorded so nothing is lost silently
+- Audit log — every archival is recorded so nothing is lost silently
+- Scalable tool pattern — new agent capabilities are new MCP tools, not new servers
+- Responsible AI — no folder is ever deleted without explicit user confirmation, preventing irreversible mistakes
+
+---
+
+## Multi-Agent Scalability Vision
+
+The product is designed around a single MCP server that hosts all tools. Agents are the reasoning workflows that use those tools. An orchestrator eventually routes between agents based on user intent.
+
+```
+Agents are the brains — they perceive, reason and decide
+Tools are the hands — they execute specific actions
+Orchestrator is the router — it decides which agent handles what
+```
+
+**Current state (v1 + v2) — 2 agents, 4 tools:**
+```
+Agent 1 — Resume Workflow
+├── save_application()
+└── list_applications()
+
+Agent 2 — Rejection Watcher
+├── check_rejections()
+└── archive_application()
+```
+
+**Future state (v3+) — 5 agents, 10+ tools:**
+```
+Agent 1 — Resume Workflow
+├── save_application()
+└── list_applications()
+
+Agent 2 — Rejection Watcher
+├── check_rejections()
+└── archive_application()
+
+Agent 3 — Follow-up Agent
+└── draft_followup()
+
+Agent 4 — Interview Prep Agent
+└── prep_interview()
+
+Agent 5 — Status Tracker
+└── track_status()
+
+Orchestrator — routes between all agents
+based on user intent and context
+```
+
+An orchestrator prompt will eventually route between these agents based on user intent — making Claude Desktop an AI-powered job search chief of staff for the intentional applicant.
 
 ---
 
@@ -161,11 +232,12 @@ Writes to deletion_log.csv: company · role · Job ID · date
 | MCP server | Python + FastMCP |
 | Package management | uv |
 | LLM platform | Claude Desktop (v1) |
-| Email reading | Gmail API + OAuth |
+| Email reading | Microsoft Graph API + MSAL OAuth |
 | Email classification | Anthropic Claude API |
 | Background scheduler | Python `schedule` library |
 | File storage | Local filesystem (v1) |
 | Memory | Folder name as key (no DB) |
+| Pending actions | pending_actions.json (lightweight bridge) |
 
 ---
 
@@ -176,19 +248,25 @@ Writes to deletion_log.csv: company · role · Job ID · date
 - 4 preloaded prompts
 - Folder creation with Job ID naming
 - Error handling and input validation
+- Responsible AI guardrails — rewrites based only on existing resume, never invents experience
+- Human-in-the-loop confirmation before every save action
 
-### v2 — Agent 2 + storage choice
-- Agent 2 rejection watcher (Gmail + Outlook)
+### v2 — Agent 2 (in progress)
+- Rejection watcher via Outlook OAuth
+- Human-in-the-loop confirmation in Claude Desktop
+- pending_actions.json as bridge between watcher and MCP server
+- 2 new MCP tools: check_rejections() and archive_application()
+- Deletion log and audit trail
 - User chooses storage location at setup:
   - Local Desktop
   - SharePoint
-- Deletion log and audit trail
 
-### v3 — expanded lifecycle
+### v3 — expanded lifecycle + multi-agent
+- Orchestrator prompt routes between all agents
+- Follow-up agent — detects emails needing a reply, drafts responses
+- Interview prep agent — generates prep materials when interview is confirmed
 - Status tracking: applied → interviewing → offer → rejected
-- Interview prep prompts
 - Application analytics: response rate by company type, role level, industry
-- Export to job tracker spreadsheet
 
 ### v4 — multi-platform (future)
 - ChatGPT Custom GPT support
@@ -201,6 +279,7 @@ Writes to deletion_log.csv: company · role · Job ID · date
 ## Open Questions for v2
 
 - How do we handle rejection emails that do not include a Job ID?
-- Should the rejection watcher run as a background process or be triggered manually?
 - What is the right default storage location for non-technical users?
 - Should we add a simple onboarding flow for first-time setup?
+- How do we handle the scheduler running when the machine is asleep at 6am?
+- Should pending_actions.json have an expiry — what if the user never confirms?

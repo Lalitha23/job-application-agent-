@@ -1,7 +1,7 @@
 # Product Spec — Job Application Agent
 **Author:** Lalitha Pammi, Product Manager  
 **Version:** 1.1  
-**Status:** Agent 1 shipped · Agent 2 in progress · Multi-agent architecture planned  
+**Status:** Agent 1 shipped · Agent 2 shipped  
 **Last updated:** April 2026
 
 ---
@@ -139,7 +139,7 @@ Saves: job_description.txt · resume.txt · cover_letter.txt
 
 ---
 
-### Agent 2 — Rejection Watcher (in progress)
+### Agent 2 — Rejection Watcher (shipped)
 **Pattern: Human-triggered autonomous** — the user's own action (deleting the rejection email) is the trigger. The agent watches only the Deleted Items folder, not the full inbox. Claude API acts as a safety check, not the primary signal. Once triggered, the agent executes cleanup fully autonomously.
 
 ```
@@ -234,7 +234,7 @@ When enough agents exist, an orchestrator prompt can route between them based on
 - Responsible AI guardrails — rewrites based only on existing resume, never invents experience
 - Human-in-the-loop confirmation before every save action
 
-### v2 — Agent 2 (in progress)
+### v2 — Agent 2 (shipped)
 - Rejection watcher via Outlook OAuth
 - Human-triggered autonomous pattern — email deletion is the trigger
 - Agent watches Deleted Items only — minimal inbox exposure

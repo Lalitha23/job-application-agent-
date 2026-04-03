@@ -102,6 +102,8 @@ An MCP server that lives inside Claude Desktop (and eventually ChatGPT and Copil
 
 ## Architecture
 
+![Agent Architecture](architecture_agents.svg)
+
 ### Agent 1 — Resume Workflow (shipped)
 **Pattern: Human-in-the-loop** — the user controls every step. The agent assists and executes, but nothing happens without explicit user intent. The "save now" trigger is a deliberate confirmation, not an automatic action.
 
@@ -138,90 +140,72 @@ Saves: job_description.txt · resume.txt · cover_letter.txt
 ---
 
 ### Agent 2 — Rejection Watcher (in progress)
-**Pattern: Human-in-the-loop** — the agent perceives and reasons autonomously, but the archiving action requires explicit user confirmation inside Claude Desktop. Nothing is deleted without the user saying so.
+**Pattern: Human-triggered autonomous** — the user's own action (deleting the rejection email) is the trigger. The agent watches only the Deleted Items folder, not the full inbox. Claude API acts as a safety check, not the primary signal. Once triggered, the agent executes cleanup fully autonomously.
 
 ```
-Runs at 6am daily (Python scheduler)
+Rejection email arrives in Outlook
         ↓
-Reads Outlook via Microsoft Graph API (last 24 hours)
+User reads it — already aware of the rejection
         ↓
-Claude API classifies each email:
-Is this a rejection? Which Job ID? Which company?
+User deletes the email ← this is the human trigger
         ↓
-Writes pending actions to pending_actions.json
-{company, job_id, folder_path, detected_date}
+Agent polls Deleted Items folder every few hours
         ↓
-User opens Claude Desktop and asks "any rejections?"
+Finds new deleted email
+Claude API safety check:
+"Is this a job rejection? Which Job ID? Which company?"
+If no  → ignore
+If yes → match Job ID to folder on Desktop
         ↓
-check_rejections() tool reads pending_actions.json
-Shows user: "Amazon JR-123456 — archive folder? Yes/No"
+Archives folder → Desktop/Job Applications/_Rejected/
+Writes to deletion_log.csv
         ↓
-User confirms → archive_application() tool fires
-Moves folder → Desktop/Job Applications/_Rejected/
-Writes to deletion_log.csv · clears from pending
+Silent, clean, no interruption needed
 ```
 
 **MCP primitives added:**
-- `check_rejections()` — tool, reads pending_actions.json and presents to user
-- `archive_application()` — tool, archives folder and writes to log on confirmation
-- `check_pending` — prompt, natural language trigger to surface pending actions
+- `archive_application()` — tool, archives matched folder and writes to log
 
 **Key design decisions:**
-- Human-in-the-loop — agent detects, human decides, agent executes
-- Single MCP server — all tools live in server.py, no separate server needed
-- pending_actions.json as the bridge between watcher.py and Claude Desktop
+- Human-triggered autonomous — user's email deletion is the intent signal, not a separate confirmation step
+- Minimal data exposure — agent reads only Deleted Items folder via `GET /me/mailFolders/deleteditems/messages`, never the full inbox
+- Scoped access — OAuth scope is `Mail.Read` but implementation explicitly calls only the Deleted Items endpoint. This is auditable — the code is open source and verifiable
+- Classification as safety net — Claude API verifies before acting, but the human already made the decision
 - Soft delete — moves to `_Rejected/` folder, never permanently deletes
 - Audit log — every archival is recorded so nothing is lost silently
-- Scalable tool pattern — new agent capabilities are new MCP tools, not new servers
-- Responsible AI — no folder is ever deleted without explicit user confirmation, preventing irreversible mistakes
+- Responsible AI — agent never reads the full inbox, only what the user has already chosen to discard
+- Single MCP server — archive_application() lives in server.py alongside Agent 1 tools
 
 ---
 
-## Multi-Agent Scalability Vision
+## Extensibility Design
 
-The product is designed around a single MCP server that hosts all tools. Agents are the reasoning workflows that use those tools. An orchestrator eventually routes between agents based on user intent.
+![Multi-Agent Extensibility](architecture_multi_agent.svg)
 
-```
-Agents are the brains — they perceive, reason and decide
-Tools are the hands — they execute specific actions
-Orchestrator is the router — it decides which agent handles what
-```
+The product currently has two agents sharing a single MCP server. This is a deliberate design choice — not just for today, but to make adding future agents straightforward.
 
-**Current state (v1 + v2) — 2 agents, 4 tools:**
+**How it works today:**
 ```
 Agent 1 — Resume Workflow
-├── save_application()
-└── list_applications()
+├── save_application()      human-in-the-loop tool
+└── list_applications()     human-in-the-loop tool
 
 Agent 2 — Rejection Watcher
-├── check_rejections()
-└── archive_application()
+├── check_rejections()      surfaces pending actions to user
+└── archive_application()   executes on user confirmation
 ```
 
-**Future state (v3+) — 5 agents, 10+ tools:**
+**Why one server matters:**
+Claude Desktop connects to the MCP server once. Every tool registered on that server is immediately available — no new configuration, no new connections. Adding a new agent capability means adding new tools to the same server. That's it.
+
+**Where this leads (v3+):**
 ```
-Agent 1 — Resume Workflow
-├── save_application()
-└── list_applications()
-
-Agent 2 — Rejection Watcher
-├── check_rejections()
-└── archive_application()
-
-Agent 3 — Follow-up Agent
-└── draft_followup()
-
-Agent 4 — Interview Prep Agent
-└── prep_interview()
-
-Agent 5 — Status Tracker
-└── track_status()
-
-Orchestrator — routes between all agents
-based on user intent and context
+Follow-up agent    → draft_followup() tool
+Interview prep     → prep_interview() tool
+Status tracking    → track_status() tool
 ```
 
-An orchestrator prompt will eventually route between these agents based on user intent — making Claude Desktop an AI-powered job search chief of staff for the intentional applicant.
+When enough agents exist, an orchestrator prompt can route between them based on user intent. That is a v3 decision — not something built prematurely into v1 or v2.
 
 ---
 
@@ -237,7 +221,6 @@ An orchestrator prompt will eventually route between these agents based on user 
 | Background scheduler | Python `schedule` library |
 | File storage | Local filesystem (v1) |
 | Memory | Folder name as key (no DB) |
-| Pending actions | pending_actions.json (lightweight bridge) |
 
 ---
 
@@ -253,18 +236,19 @@ An orchestrator prompt will eventually route between these agents based on user 
 
 ### v2 — Agent 2 (in progress)
 - Rejection watcher via Outlook OAuth
-- Human-in-the-loop confirmation in Claude Desktop
-- pending_actions.json as bridge between watcher and MCP server
-- 2 new MCP tools: check_rejections() and archive_application()
+- Human-triggered autonomous pattern — email deletion is the trigger
+- Agent watches Deleted Items only — minimal inbox exposure
+- Claude API classification as safety net
+- archive_application() MCP tool
 - Deletion log and audit trail
 - User chooses storage location at setup:
   - Local Desktop
   - SharePoint
 
-### v3 — expanded lifecycle + multi-agent
-- Orchestrator prompt routes between all agents
-- Follow-up agent — detects emails needing a reply, drafts responses
-- Interview prep agent — generates prep materials when interview is confirmed
+### v3 — expanded lifecycle + orchestration
+- Additional agents: follow-up, interview prep, status tracking
+- Each new agent adds tools to the existing MCP server
+- Orchestrator prompt routes between agents based on user intent
 - Status tracking: applied → interviewing → offer → rejected
 - Application analytics: response rate by company type, role level, industry
 
@@ -281,5 +265,6 @@ An orchestrator prompt will eventually route between these agents based on user 
 - How do we handle rejection emails that do not include a Job ID?
 - What is the right default storage location for non-technical users?
 - Should we add a simple onboarding flow for first-time setup?
-- How do we handle the scheduler running when the machine is asleep at 6am?
-- Should pending_actions.json have an expiry — what if the user never confirms?
+- How do we handle the scheduler running when the machine is asleep?
+- What if the user deletes a non-rejection email from a job-related company?
+- How long should the agent look back in Deleted Items — 24 hours, 48 hours?

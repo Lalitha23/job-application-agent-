@@ -1,0 +1,81 @@
+<svg width="680" viewBox="0 0 680 760" xmlns="http://www.w3.org/2000/svg" font-family="sans-serif">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M2 1L8 5L2 9" fill="none" stroke="#888780" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+  </defs>
+
+  <!-- Agent 1 container -->
+  <rect x="30" y="20" width="620" height="290" rx="14" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.5"/>
+  <text x="50" y="46" font-size="14" font-weight="500" fill="#085041">Agent 1 — resume workflow</text>
+  <text x="50" y="63" font-size="12" fill="#0F6E56">human-in-the-loop · user controls every step</text>
+
+  <rect x="55" y="78" width="155" height="56" rx="8" fill="#EEEDFE" stroke="#534AB7" stroke-width="0.5"/>
+  <text x="132" y="100" font-size="14" font-weight="500" fill="#3C3489" text-anchor="middle">Paste JD + resume</text>
+  <text x="132" y="118" font-size="12" fill="#534AB7" text-anchor="middle">into Claude Desktop</text>
+
+  <rect x="238" y="78" width="155" height="56" rx="8" fill="#EEEDFE" stroke="#534AB7" stroke-width="0.5"/>
+  <text x="315" y="100" font-size="14" font-weight="500" fill="#3C3489" text-anchor="middle">Choose prompt</text>
+  <text x="315" y="118" font-size="12" fill="#534AB7" text-anchor="middle">review · rewrite · cover letter</text>
+
+  <rect x="421" y="78" width="200" height="56" rx="8" fill="#EEEDFE" stroke="#534AB7" stroke-width="0.5"/>
+  <text x="521" y="100" font-size="14" font-weight="500" fill="#3C3489" text-anchor="middle">Iterate with Claude</text>
+  <text x="521" y="118" font-size="12" fill="#534AB7" text-anchor="middle">refine until satisfied</text>
+
+  <line x1="210" y1="106" x2="236" y2="106" stroke="#888780" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="393" y1="106" x2="419" y2="106" stroke="#888780" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <rect x="190" y="164" width="300" height="44" rx="8" fill="#FAECE7" stroke="#993C1D" stroke-width="0.5"/>
+  <text x="340" y="179" font-size="14" font-weight="500" fill="#712B13" text-anchor="middle">"Save now" — human approval required</text>
+
+  <line x1="521" y1="134" x2="521" y2="162" stroke="#888780" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <path d="M521 162 L521 186 L492 186" fill="none" stroke="#888780" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <rect x="90" y="228" width="500" height="44" rx="8" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.5"/>
+  <text x="340" y="243" font-size="14" font-weight="500" fill="#0C447C" text-anchor="middle">save_application() tool</text>
+  <text x="340" y="261" font-size="12" fill="#185FA5" text-anchor="middle">confirm Job ID → create folder → save JD + resume + cover letter</text>
+
+  <line x1="340" y1="208" x2="340" y2="226" stroke="#888780" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <rect x="175" y="292" width="330" height="22" rx="6" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.5"/>
+  <text x="340" y="303" font-size="12" fill="#444441" text-anchor="middle">Desktop / Job Applications / Amazon / Senior-PM-JR-123456</text>
+
+  <line x1="340" y1="272" x2="340" y2="290" stroke="#888780" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- Divider -->
+  <line x1="30" y1="352" x2="650" y2="352" stroke="#888780" stroke-width="0.5" stroke-dasharray="6 4"/>
+
+  <!-- Agent 2 container -->
+  <rect x="30" y="362" width="620" height="360" rx="14" fill="#FAEEDA" stroke="#854F0B" stroke-width="0.5"/>
+  <text x="50" y="388" font-size="14" font-weight="500" fill="#633806">Agent 2 — rejection watcher</text>
+  <text x="50" y="405" font-size="12" fill="#854F0B">human-triggered autonomous · Deleted Items only · inbox never read</text>
+
+  <rect x="155" y="418" width="370" height="56" rx="8" fill="#FAECE7" stroke="#993C1D" stroke-width="0.5"/>
+  <text x="340" y="439" font-size="14" font-weight="500" fill="#712B13" text-anchor="middle">User deletes rejection email ← human trigger</text>
+  <text x="340" y="457" font-size="12" fill="#993C1D" text-anchor="middle">user already aware · conscious decision made</text>
+
+  <rect x="55" y="504" width="270" height="56" rx="8" fill="#FAEEDA" stroke="#854F0B" stroke-width="0.5"/>
+  <text x="190" y="525" font-size="14" font-weight="500" fill="#633806" text-anchor="middle">Poll Deleted Items only</text>
+  <text x="190" y="543" font-size="12" fill="#854F0B" text-anchor="middle">GET /mailFolders/deleteditems</text>
+
+  <rect x="355" y="504" width="270" height="56" rx="8" fill="#FAEEDA" stroke="#854F0B" stroke-width="0.5"/>
+  <text x="490" y="525" font-size="14" font-weight="500" fill="#633806" text-anchor="middle">Claude API safety check</text>
+  <text x="490" y="543" font-size="12" fill="#854F0B" text-anchor="middle">rejection? Job ID? company?</text>
+
+  <line x1="340" y1="474" x2="340" y2="490" stroke="#888780" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <path d="M340 490 L190 490 L190 502" fill="none" stroke="#888780" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="325" y1="532" x2="353" y2="532" stroke="#888780" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <rect x="155" y="590" width="370" height="44" rx="8" fill="#FAEEDA" stroke="#854F0B" stroke-width="0.5"/>
+  <text x="340" y="605" font-size="14" font-weight="500" fill="#633806" text-anchor="middle">Match Job ID to folder on Desktop</text>
+  <text x="340" y="623" font-size="12" fill="#854F0B" text-anchor="middle">scan Job Applications · find match by Job ID</text>
+
+  <line x1="490" y1="560" x2="490" y2="576" stroke="#888780" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <path d="M490 576 L490 612 L527 612" fill="none" stroke="#888780" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <rect x="90" y="664" width="500" height="44" rx="8" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.5"/>
+  <text x="340" y="679" font-size="14" font-weight="500" fill="#0C447C" text-anchor="middle">archive_application() tool</text>
+  <text x="340" y="697" font-size="12" fill="#185FA5" text-anchor="middle">move to _Rejected/ · write deletion_log.csv · silent</text>
+
+  <line x1="340" y1="634" x2="340" y2="662" stroke="#888780" stroke-width="1.5" marker-end="url(#arrow)"/>
+</svg>

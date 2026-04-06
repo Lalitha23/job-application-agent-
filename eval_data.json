@@ -1,0 +1,182 @@
+[
+  {
+    "id": "TC01",
+    "category": "clear_rejection_with_job_id",
+    "subject": "Your application for Senior Product Manager (JR-123456) at Amazon",
+    "body": "Thank you for taking the time to apply for the Senior Product Manager position (JR-123456) at Amazon. After careful consideration, we have decided to move forward with other candidates whose experience more closely matches our current needs. We appreciate your interest in Amazon and encourage you to apply for future openings.",
+    "expected": {
+      "is_rejection": true,
+      "job_id": "JR-123456",
+      "company": "Amazon"
+    },
+    "severity_if_wrong": "low"
+  },
+  {
+    "id": "TC02",
+    "category": "clear_rejection_with_job_id",
+    "subject": "Update on your application – Product Manager, REQ-789 – Microsoft",
+    "body": "Hi Lalitha, thank you for your interest in the Product Manager role (REQ-789) at Microsoft. We've completed our review and have decided to pursue other applicants at this time. We'll keep your resume on file for future opportunities.",
+    "expected": {
+      "is_rejection": true,
+      "job_id": "REQ-789",
+      "company": "Microsoft"
+    },
+    "severity_if_wrong": "low"
+  },
+  {
+    "id": "TC03",
+    "category": "clear_rejection_no_job_id",
+    "subject": "Your application to Stripe",
+    "body": "Thank you for applying to Stripe. We've reviewed your application and have decided not to move forward at this time. We were impressed by your background but felt that other candidates were a stronger match for this particular role. We encourage you to check our careers page for future openings.",
+    "expected": {
+      "is_rejection": true,
+      "job_id": "NONE",
+      "company": "Stripe"
+    },
+    "severity_if_wrong": "low"
+  },
+  {
+    "id": "TC04",
+    "category": "clear_rejection_no_job_id",
+    "subject": "Re: Senior PM Application",
+    "body": "Hi, I wanted to follow up on your application for our Senior PM role. After interviewing several strong candidates, we've decided to move in a different direction. This was a difficult decision — you have a strong background. We wish you all the best in your search.",
+    "expected": {
+      "is_rejection": true,
+      "job_id": "NONE",
+      "company": "NONE"
+    },
+    "severity_if_wrong": "low"
+  },
+  {
+    "id": "TC05",
+    "category": "informal_recruiter_rejection",
+    "subject": "Following up",
+    "body": "Hi Lalitha, I wanted to reach out personally. We've decided to move forward with another candidate for the PM role we discussed. It was genuinely a tough call — you interviewed very well. I'll keep you in mind for future roles. Best of luck.",
+    "expected": {
+      "is_rejection": true,
+      "job_id": "NONE",
+      "company": "NONE"
+    },
+    "severity_if_wrong": "low"
+  },
+  {
+    "id": "TC06",
+    "category": "interview_invite_false_positive_risk",
+    "subject": "Next steps for your application – Senior PM – Airbnb",
+    "body": "Hi Lalitha, thank you for applying to the Senior PM role at Airbnb. We've reviewed your application and would like to invite you to a phone screen with our recruiting team. Please use the link below to schedule a 30-minute call at your convenience.",
+    "expected": {
+      "is_rejection": false,
+      "job_id": "NONE",
+      "company": "Airbnb"
+    },
+    "severity_if_wrong": "high"
+  },
+  {
+    "id": "TC07",
+    "category": "interview_invite_false_positive_risk",
+    "subject": "We reviewed your application – Product Manager (JR-555) – Google",
+    "body": "Hi Lalitha, we've completed our review of your application for Product Manager (JR-555) and we'd like to move forward. We're scheduling interviews for next week — please reply to confirm your availability for a 45-minute video call.",
+    "expected": {
+      "is_rejection": false,
+      "job_id": "JR-555",
+      "company": "Google"
+    },
+    "severity_if_wrong": "high"
+  },
+  {
+    "id": "TC08",
+    "category": "offer_letter_catastrophic_false_positive",
+    "subject": "Offer of Employment – Senior Product Manager – Salesforce",
+    "body": "Dear Lalitha, we are pleased to extend an offer of employment for the position of Senior Product Manager at Salesforce. Your start date would be May 1, 2026. Please find attached your offer letter with compensation details. We look forward to welcoming you to the team.",
+    "expected": {
+      "is_rejection": false,
+      "job_id": "NONE",
+      "company": "Salesforce"
+    },
+    "severity_if_wrong": "critical"
+  },
+  {
+    "id": "TC09",
+    "category": "promotional_email_from_applied_company",
+    "subject": "New PM roles at Amazon — jobs you might like",
+    "body": "Hi Lalitha, based on your profile, we think these new openings at Amazon might interest you. Senior PM – Alexa (JR-999), Principal PM – AWS (JR-888). Apply today and join thousands of Amazonians building the future.",
+    "expected": {
+      "is_rejection": false,
+      "job_id": "NONE",
+      "company": "Amazon"
+    },
+    "severity_if_wrong": "high"
+  },
+  {
+    "id": "TC10",
+    "category": "promotional_email_from_applied_company",
+    "subject": "Your LinkedIn Job Alert: Product Manager roles",
+    "body": "You have 12 new Product Manager jobs matching your preferences. Google – Senior PM (new), Meta – Product Lead (new), Apple – PM II (new). See all jobs on LinkedIn.",
+    "expected": {
+      "is_rejection": false,
+      "job_id": "NONE",
+      "company": "NONE"
+    },
+    "severity_if_wrong": "medium"
+  },
+  {
+    "id": "TC11",
+    "category": "newsletter_should_not_trigger",
+    "subject": "This week in Product: Roadmap prioritization frameworks",
+    "body": "Hey Lalitha, this week we're covering roadmap prioritization, how to run better discovery interviews, and a Q&A with the PM team at Figma. Plus: 5 job boards that actually have good PM roles. Read the full issue below.",
+    "expected": {
+      "is_rejection": false,
+      "job_id": "NONE",
+      "company": "NONE"
+    },
+    "severity_if_wrong": "medium"
+  },
+  {
+    "id": "TC12",
+    "category": "newsletter_should_not_trigger",
+    "subject": "Lenny's Newsletter: How to negotiate your job offer",
+    "body": "This week: everything you need to know about negotiating a job offer. Base salary, equity, signing bonus, start date — what to ask for and how to ask. Also: an interview with the Head of Product at Notion on building 0-to-1 products.",
+    "expected": {
+      "is_rejection": false,
+      "job_id": "NONE",
+      "company": "NONE"
+    },
+    "severity_if_wrong": "low"
+  },
+  {
+    "id": "TC13",
+    "category": "ambiguous_rejection_no_role_mentioned",
+    "subject": "Thank you for your interest",
+    "body": "Thank you for reaching out. At this time we are not moving forward with your application. We appreciate your interest in our company and wish you the best.",
+    "expected": {
+      "is_rejection": true,
+      "job_id": "NONE",
+      "company": "NONE"
+    },
+    "severity_if_wrong": "low"
+  },
+  {
+    "id": "TC14",
+    "category": "rejection_with_unusual_job_id_format",
+    "subject": "Application Update – Staff PM #20241105 – Figma",
+    "body": "Hi Lalitha, thank you for your application for the Staff PM position (#20241105) at Figma. After careful consideration, we will not be moving forward with your candidacy at this time. Thank you again for your time and interest.",
+    "expected": {
+      "is_rejection": true,
+      "job_id": "#20241105",
+      "company": "Figma"
+    },
+    "severity_if_wrong": "low"
+  },
+  {
+    "id": "TC15",
+    "category": "application_confirmation_false_positive_risk",
+    "subject": "We received your application – Product Manager – Notion",
+    "body": "Hi Lalitha, we've received your application for the Product Manager role at Notion. Our team will review your materials and be in touch within 2 weeks. In the meantime, feel free to browse our open roles or learn more about life at Notion.",
+    "expected": {
+      "is_rejection": false,
+      "job_id": "NONE",
+      "company": "Notion"
+    },
+    "severity_if_wrong": "high"
+  }
+]

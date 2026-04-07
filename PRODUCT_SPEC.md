@@ -94,7 +94,7 @@ An MCP server that lives inside Claude Desktop (and eventually ChatGPT and Copil
 
 **Core philosophy:** Meet users where they already are. No new app to download, no new account to create, no subscription to pay for. The agent plugs into the LLM the user already uses and adds structure to a workflow they are already doing.
 
-**Responsible AI philosophy:** The agent never acts without the user's knowledge. It does not rewrite resumes from scratch, invent experience, or apply on the user's behalf. Every AI action is transparent, reversible, and grounded in what the user has already written. The human stays in control at every step.
+**Responsible AI philosophy:** The trust contract has to be felt, not read. The agent never acts without the user's knowledge. It does not rewrite resumes from scratch, invent experience, or apply on the user's behalf. Every AI action is transparent, reversible, and grounded in what the user has already written. The human stays in control at every step.
 
 **Scalability philosophy:** The product is built on a single MCP server that grows over time. Each new agent capability is added as a new MCP tool — Claude Desktop connects to the server once and automatically gains access to every tool. This means adding a new agent does not require a new server, a new connection, or any reconfiguration. The server is the stable foundation. Agents and tools are layered on top of it as the product evolves.
 
@@ -191,8 +191,7 @@ Agent 1 — Resume Workflow
 └── list_applications()     human-in-the-loop tool
 
 Agent 2 — Rejection Watcher
-├── check_rejections()      surfaces pending actions to user
-└── archive_application()   executes on user confirmation
+└── archive_application()   executes autonomously on human trigger
 ```
 
 **Why one server matters:**

@@ -54,12 +54,8 @@
   <text x="275" y="355" font-size="12" fill="#185FA5" text-anchor="middle">Agent 1 tool</text>
 
   <rect x="360" y="322" width="140" height="44" rx="8" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.5"/>
-  <text x="430" y="337" font-size="14" font-weight="500" fill="#0C447C" text-anchor="middle">check_rejections()</text>
+  <text x="430" y="337" font-size="14" font-weight="500" fill="#0C447C" text-anchor="middle">archive_app()</text>
   <text x="430" y="355" font-size="12" fill="#185FA5" text-anchor="middle">Agent 2 tool</text>
-
-  <rect x="515" y="322" width="120" height="44" rx="8" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.5"/>
-  <text x="575" y="337" font-size="14" font-weight="500" fill="#0C447C" text-anchor="middle">archive_app()</text>
-  <text x="575" y="355" font-size="12" fill="#185FA5" text-anchor="middle">Agent 2 tool</text>
 
   <!-- Future tools -->
   <rect x="50" y="382" width="140" height="44" rx="8" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.5"/>

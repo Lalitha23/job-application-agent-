@@ -125,13 +125,13 @@ Desktop/
     ├── Amazon/
     │   └── Senior-PM-JR-123456/
     │       ├── job_description.txt
-    │       ├── resume.txt
-    │       └── cover_letter.txt
+    │       ├── resume.docx
+    │       └── cover_letter.docx
     ├── Microsoft/
     │   └── PM-REQ-789/
     │       ├── job_description.txt
-    │       ├── resume.txt
-    │       └── cover_letter.txt
+    │       ├── resume.docx
+    │       └── cover_letter.docx
     ├── _Rejected/
     │   └── Senior-PM-JR-111111/   ← archived by Agent 2
     └── deletion_log.csv
@@ -212,6 +212,67 @@ Every archived folder is recorded in `Desktop/Job Applications/deletion_log.csv`
 | Amazon | Senior-PM-JR-123456 | 2026-04-01 08:30 | /Users/.../Amazon/Senior-PM-JR-123456 |
 
 Nothing is permanently deleted. Folders move to `_Rejected/` and the log is your audit trail.
+
+---
+
+## Evaluating the Classifier (Agent 2)
+
+Agent 2's rejection classifier is the only fully autonomous decision in this product. It runs without user input, so it has a dedicated eval harness to measure accuracy before and after any changes.
+
+### What the eval measures
+
+- **Precision** — of emails classified as rejections, how many actually were?
+- **Recall** — of actual rejections, how many did the classifier catch?
+- **Extraction accuracy** — when a rejection is correctly identified, did it extract the right Job ID and company?
+- **Severity-weighted failures** — false positives are flagged by impact: archiving an offer letter is `critical`, archiving an interview invite is `high`
+
+### Run the eval
+
+```bash
+uv run eval_classifier.py
+```
+
+Requires only `ANTHROPIC_API_KEY`. Does not require Microsoft credentials. Costs approximately $0.002 to run against Haiku.
+
+### Test coverage
+
+`eval_data.json` contains 15 labeled test cases covering:
+
+| Category | Why it matters |
+|---|---|
+| Clear rejection with Job ID | Happy path |
+| Clear rejection without Job ID | Common — many ATS emails omit it |
+| Informal recruiter rejection | No ATS language, no Job ID |
+| Interview invite | Most common false positive risk |
+| Offer letter | Catastrophic false positive — must never trigger |
+| Promotional email from applied company | Company name matches but not a rejection |
+| Application confirmation | Similar structure to rejection, different outcome |
+| Newsletter | Should never trigger |
+
+### Adding your own test cases
+
+Add real emails from your own inbox to `eval_data.json` over time. Each entry follows this structure:
+
+```json
+{
+  "id": "TC16",
+  "category": "your_category",
+  "subject": "Email subject line",
+  "body": "Email body preview text",
+  "expected": {
+    "is_rejection": true,
+    "job_id": "JR-123456",
+    "company": "Company Name"
+  },
+  "severity_if_wrong": "high"
+}
+```
+
+`severity_if_wrong` accepts: `critical`, `high`, `medium`, `low`
+
+### Confidence guardrail
+
+The classifier returns a `confidence` field (`high`, `medium`, `low`). In production, low-confidence results are skipped and written to `review_needed.csv` rather than triggering archival. This trades recall for safety — missing a rejection is less harmful than archiving an interview invite.
 
 ---
 
